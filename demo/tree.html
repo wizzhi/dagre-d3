@@ -1,0 +1,137 @@
+<!doctype html>
+
+<meta charset="utf-8">
+<title>Dagre D3 Demo: Style Attributes</title>
+
+<link rel="stylesheet" href="demo.css">
+<script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+<script src="../dist/dagre-d3.min.js"></script>
+
+<h1>Dagre D3 Demo: Style Attributes</h1>
+
+<style id="css">
+text {
+  font-weight: 300;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+  font-size: 14px;
+}
+
+.node rect {
+  stroke: #333;
+  fill: #fff;
+  stroke-width: 1.5px;
+}
+
+.edgePath path.path {
+  stroke: #333;
+  fill: none;
+  stroke-width: 1.5px;
+}
+
+.arrowhead {
+ stroke: blue;
+ fill: blue;
+ stroke-width: 1.5px;
+}
+
+</style>
+
+<svg id="svg" width=960 height=600></svg>
+
+<section>
+<p>An example showing how styles that are set in the input graph can be applied
+to nodes, node labels, edges, and edge labels in the rendered graph.
+</section>
+
+<script id="js">
+
+const elbowLine = (context) => ({
+  lineStart() {
+    this.data = [];
+  },
+
+  point(x, y) {
+    this.data.push([x, y]);
+  },
+
+  lineEnd() {
+    const [x0, y0] = this.data[0];
+    const [cp1x, cp1y] = this.data[1];
+    const [cp2x, cp2y] = this.data[this.data.length - 2];
+    const [x1, y1] = this.data[this.data.length - 1];
+    context.moveTo(x0, y0);
+//    context.lineTo(cp1x, cp1y);
+    context.lineTo(x0, cp1y);
+    context.lineTo(x0, cp1y);
+    context.lineTo(x1, cp1y);
+    context.lineTo(x1, y1);
+
+    //context.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x1, y1);
+  },
+});
+    
+    
+// Create the input graph
+var g = new dagreD3.graphlib.Graph().setGraph({});
+
+// Fill node "A" with the color green
+g.setNode("A", { labelType: "html",
+label: "<img src='https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png' width='40'></img>"});
+g.setNode("A1 撒上的发烧发顺丰 <br />asfasfsafsf", { labelType: "html"});
+g.setNode("A2", { style: "fill: #afa" , labelStyle: "font-size: 3em"});
+
+// Make the label for node "B" bold
+g.setNode("B", { labelStyle: "font-weight: bold" });
+
+// Double the size of the font for node "C"
+g.setNode("C", { labelStyle: "font-size: 2em" });
+
+
+g.setNode("D", {});
+g.setNode("E", {});
+g.setNode("F", {});
+g.setNode("G", {});
+g.setNode("H", {});
+
+g.setEdge("A", "B", {
+    curve: elbowLine, arrowhead: 'undirected'
+});
+g.setEdge("A", "C", {
+    curve: elbowLine, arrowhead: 'undirected'
+});
+g.setEdge("A", "D", {
+    curve: elbowLine, arrowhead: 'undirected'
+});
+g.setEdge("A", "E", {
+    curve: elbowLine, arrowhead: 'undirected'
+});
+g.setEdge("A", "F", {
+    curve: elbowLine, arrowhead: 'undirected'
+});
+g.setEdge("A", "G", {
+    curve: elbowLine, arrowhead: 'undirected'
+});
+g.setEdge("A", "H", {
+    curve: elbowLine, arrowhead: 'undirected'
+});
+g.setEdge("A2", "H", {
+    curve: elbowLine, arrowhead: 'undirected'
+});
+
+// Create the renderer
+var render = new dagreD3.render();
+
+// Set up an SVG group so that we can translate the final graph.
+var svg = d3.select("svg"),
+    inner = svg.append("g");
+
+// Run the renderer. This is what draws the final graph.
+render(inner, g);
+
+// Center the graph
+var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
+inner.attr("transform", "translate(" + xCenterOffset + ", 20)");
+svg.attr("height", g.graph().height + 40);
+</script>
+
+
